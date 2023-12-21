@@ -1,0 +1,75 @@
+<!-- Formulaire d'ajout de tâche -->
+<div class="section-container">
+  <h2>Ajouter une tâche</h2>
+  <!-- Ajoutez une div pour afficher l'erreur -->
+  <div *ngIf="formError" class="error-message">{{ formError }}</div>
+  <form #taskForm="ngForm" (ngSubmit)="addNewTask(taskForm)" class="form-container">
+    <label for="label">Libellé:</label>
+    <input type="text" id="label" #label name="label" ngModel required>
+
+    <label for="status">Statut:</label>
+    <select id="status" #status name="status" ngModel required>
+      <option value="false">TODO</option>
+      <option value="true">DONE</option>
+    </select>
+
+    <button type="submit" [disabled]="!taskForm.form.valid">Ajouter la tâche</button>
+  </form>
+</div>
+
+
+<!-- Tableau pour afficher toutes les tâches -->
+<div class="section-container">
+  <h2>Liste de toutes les tâches</h2>
+  <div *ngIf="tasks.length > 0; else noTasks">
+    <table>
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Libellé</th>
+        <th>Statut</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let task of tasks">
+        <td>{{ task.id }}</td>
+        <td>{{ task.label }}</td>
+        <td>{{ task.completed ? "DONE" : "TO DO" }}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ng-template #noTasks>
+    No Tasks Available
+  </ng-template>
+</div>
+
+<!-- Bouton de recherche -->
+<div class="section-container">
+  <h2>Recherche de tâches 'TODO'</h2>
+  <button (click)="searchTasksByStatus()" class="search-button">Rechercher les tâches 'TODO'</button>
+</div>
+
+<!-- Tableau pour afficher les tâches non terminées -->
+<div class="section-container">
+  <h2>Liste de tâches non terminées</h2>
+  <table>
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Libellé</th>
+      <th>Statut</th>
+      <th>Modifier Status</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let task of unCompletedTasks">
+      <td>{{ task.id }}</td>
+      <td>{{ task.label }}</td>
+      <td>{{ task.completed ? "DONE" : "TO DO" }}</td>
+      <td><button (click)="markTaskAsDone()">Edit</button></td>
+    </tr>
+    </tbody>
+  </table>
+</div>

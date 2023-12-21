@@ -1,0 +1,74 @@
+.section-container {
+  margin-bottom: 20px;
+  max-width: 400px;
+
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+}
+
+th {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.form-container {
+  max-width: 400px;
+  margin: 20px 0;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+input, select, button {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 16px;
+  box-sizing: border-box;
+}
+
+button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+/* Style pour le bouton de recherche */
+.search-button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.search-button:hover {
+  background-color: #2980b9;
+}
+
+/* Style pour le message d'erreur */
+.error-message {
+  color: red;
+  margin-top: 5px;
+}
+
+

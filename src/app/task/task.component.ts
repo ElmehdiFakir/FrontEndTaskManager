@@ -4,6 +4,7 @@ import {Task} from '../model/task';
 import {takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
 import {NgForm} from "@angular/forms";
+import {PaginationResponse} from "../model/paginationResponse";
 
 @Component({
   selector: 'app-task',
@@ -15,10 +16,11 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   tasks: Task[] = [];
   searchedTask: Task | undefined;
-  searchedTasks: Task[] = [];
+  totalTasks: number = 0;
+  tasksPerPage: number = 2;
+  currentPage: number = 1;
 
   unCompletedTasks: Task[] = [];
-  newTask: Task = {id: 0, label: '', completed: false}; // Nouvelle tâche à ajouter
 
   formError: string | null = null;
 
@@ -27,16 +29,18 @@ export class TaskComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.getAllTasks();
+    this.getAllTasks(this.currentPage, this.tasksPerPage);
   }
 
-  getAllTasks(): void {
+  getAllTasks(page: number, pageSize: number): void {
     this.taskService
-      .getAllTasks()
+      .getAllTasks(page-1, pageSize)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (tasks: Task[]) => {
-          this.tasks = tasks;
+        next: (response : PaginationResponse) => {
+          console.log("RESPONSE", response);
+          this.tasks = response.content;
+          this.totalTasks = response.totalElements;
         },
         complete: () => {
           console.log('Get all tasks done');
@@ -81,10 +85,10 @@ export class TaskComponent implements OnInit, OnDestroy {
       });
   }
 
-  addTask(task: Task): void {
+  addTask(task: Task, onSuccess: () => void): void {
     this.taskService.addTask(task).subscribe({
       next: (response : String) => {
-        this.getAllTasks();
+        onSuccess();
         console.log(response);
       },
       error: (error) => {
@@ -101,7 +105,9 @@ export class TaskComponent implements OnInit, OnDestroy {
     // Vérifiez si le libellé est non vide avant d'ajouter
     if (label.trim() !== '') {
       const newTask: Task = { label: label, completed: status };
-      this.addTask(newTask);
+      this.addTask(newTask, () => {
+        this.getAllTasks(1,this.tasksPerPage);
+      });
 
       // Réinitialisez le formulaire après l'ajout de la tâche
       form.resetForm({ label: '', status: 'true' });
@@ -114,19 +120,29 @@ export class TaskComponent implements OnInit, OnDestroy {
     }
   }
 
-  markTaskAsDone(): void {
-      const taskToMarkAsDone: Task = this.unCompletedTasks[0];
+  markTaskAsDone(task: Task): void {
 
-      this.taskService.markTaskAsDone(taskToMarkAsDone.id).subscribe({
+      this.taskService.markTaskAsDone(task.id).subscribe({
         next: (response: String) => {
-          console.log(response);
-          this.getAllTasks();
-          this.searchTasksByStatus(); // Mettez à jour la liste des tâches non terminées après la modification du statut
+          this.getAllTasks(1, this.tasksPerPage);
+          this.searchTasksByStatus();
         },
         error: (error: any) => {
           console.error('Error marking task as done', error);
         },
       });
+  }
+
+  changePage(offset: number): void {
+    const newPage = this.currentPage + offset;
+    if (newPage >= 1 && newPage <= this.totalPages()) {
+      this.currentPage = newPage;
+      this.getAllTasks(this.currentPage, this.tasksPerPage);
+    }
+  }
+
+  totalPages(): number {
+    return Math.ceil(this.totalTasks / this.tasksPerPage);
   }
 
 
@@ -135,4 +151,5 @@ export class TaskComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  protected readonly console = console;
 }

@@ -39,6 +39,12 @@
       </tbody>
     </table>
   </div>
+  <!-- Ajouter ces éléments à votre modèle -->
+  <div>
+    <button (click)="changePage(-1)" [disabled]="currentPage === 1">Previous</button>
+    Page {{ currentPage }} of {{ totalPages() }}
+    <button (click)="changePage(1)" [disabled]="currentPage === totalPages()">Next</button>
+  </div>
 
   <ng-template #noTasks>
     No Tasks Available
@@ -68,7 +74,7 @@
       <td>{{ task.id }}</td>
       <td>{{ task.label }}</td>
       <td>{{ task.completed ? "DONE" : "TO DO" }}</td>
-      <td><button (click)="markTaskAsDone()">Edit</button></td>
+      <td><button (click)="markTaskAsDone(task)">Edit</button></td>
     </tr>
     </tbody>
   </table>
